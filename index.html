@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuromi English Adventure</title>
+<style>
+:root{--purple:#7c3aed;--pink:#ff4fa3;--dark:#181329;--lav:#efe4ff;--white:#fff;--green:#35c98a;--yellow:#ffd84d}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#f5eaff,#ffd9ef);color:var(--dark)}
+button{font:inherit;cursor:pointer;border:0}.app{min-height:100vh;padding:18px}
+.top{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff8;border:2px solid #fff;border-radius:24px;padding:12px 16px;backdrop-filter:blur(8px)}
+.logo{font-weight:900;font-size:20px}.stats{display:flex;gap:8px;flex-wrap:wrap}.pill{background:var(--dark);color:white;border-radius:999px;padding:8px 12px;font-weight:700}
+.screen{max-width:1100px;margin:20px auto}.hero{background:linear-gradient(145deg,#221a3a,#5c2c9d);color:white;border-radius:34px;padding:42px 30px;min-height:420px;display:grid;grid-template-columns:1.4fr .8fr;align-items:center;box-shadow:0 18px 45px #5b2c9d33}
+h1{font-size:clamp(38px,7vw,72px);margin:8px 0}.hero p{font-size:20px;line-height:1.5;max-width:650px}.rabbit{font-size:150px;text-align:center;filter:drop-shadow(0 15px 0 #0003);animation:float 2.5s ease-in-out infinite}@keyframes float{50%{transform:translateY(-12px) rotate(2deg)}}
+.cta,.primary{background:linear-gradient(90deg,var(--pink),#a855f7);color:#fff;padding:15px 24px;border-radius:18px;font-weight:900;font-size:18px;box-shadow:0 8px 20px #ff4fa344}
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;border-radius:24px;padding:22px;box-shadow:0 10px 25px #3b14551c;border:3px solid transparent;transition:.2s}.card:hover{transform:translateY(-4px)}.card.locked{opacity:.5;filter:grayscale(.4)}.icon{font-size:48px}.card h3{margin:8px 0;font-size:22px}.small{color:#766b86}
+.lesson{background:white;border-radius:30px;padding:26px;box-shadow:0 12px 30px #3b14551c}.progress{height:12px;background:#eadff3;border-radius:99px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,#ff4fa3,#8b5cf6);width:0;transition:.4s}
+.question{font-size:30px;font-weight:900;text-align:center;margin:28px 0}.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}.choice{background:#f5edff;border:3px solid #e5d7ff;border-radius:18px;padding:18px;font-size:21px;font-weight:800}.choice:hover{border-color:var(--pink);transform:scale(1.02)}.feedback{text-align:center;min-height:32px;font-weight:900;margin:16px}.correct{color:#159765}.wrong{color:#d43b72}.nav{display:flex;justify-content:space-between;gap:12px;margin-top:20px}.secondary{background:#eee7f5;padding:12px 18px;border-radius:14px;font-weight:800}
+.word{font-size:54px;letter-spacing:8px;text-align:center;margin:20px}.stars{color:#ffb800}.teacher{background:#fff;border-radius:24px;padding:20px;margin-top:18px}
+@media(max-width:700px){.hero{grid-template-columns:1fr;text-align:center}.rabbit{font-size:100px}.hero p{font-size:17px}.question{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo">🎀 Kuromi English Adventure</div><div class="stats"><span class="pill">⭐ <span id="xp">0</span> XP</span><span class="pill">💜 <span id="stars">0</span></span></div></header>
+<main id="app" class="screen"></main>
+</div>
+<script>
+const lessons=[
+{id:'alphabet',icon:'🔤',title:'Alphabet Land',desc:'Letters, sounds, vowels & uppercase/lowercase',tasks:[
+['Which letter is a vowel?',['B','E','T','S'],'E'],
+['Choose the lowercase letter for A.',['a','b','c','d'],'a'],
+['Which letter makes /s/?',['S','M','P','T'],'S'],
+['Match the beginning sound: 🐱 cat',['M','C','T','P'],'C']]},
+{id:'phonics',icon:'🪄',title:'Phonics Castle',desc:'Blend sounds and read your first words',tasks:[
+['Blend: s + a + t',['sat','sit','set','sun'],'sat'],
+['Blend: p + i + n',['pan','pin','pen','pun'],'pin'],
+['Which word starts with /t/?',['map','tin','sun','pen'],'tin'],
+['Read: c-a-t',['cat','cut','cot','kit'],'cat']]},
+{id:'cvc',icon:'🧩',title:'CVC Word Factory',desc:'Build and read simple words',tasks:[
+['Choose the word: 🐶',['dog','dig','bag','pig'],'dog'],
+['Choose the word: 🖊️',['pen','pan','pin','pet'],'pen'],
+['Choose the word: ☀️',['sun','sit','sat','sin'],'sun'],
+['Which word has 3 sounds?',['cat','cake','rain','she'],'cat']]},
+{id:'sight',icon:'💜',title:'Sight Words Café',desc:'Learn high-frequency words',tasks:[
+['Complete: I ___ a cat.',['see','blue','under','three'],'see'],
+['Complete: The dog ___ big.',['is','in','to','and'],'is'],
+['Choose the sight word.',['jump','banana','purple','teddy'],'jump'],
+['Complete: ___ have a pen.',['I','Cat','Red','Under'],'I']]},
+{id:'vocab',icon:'🐱',title:'Vocabulary World',desc:'Colors, animals, family, toys & more',tasks:[
+['What color is 🍎?',['red','blue','green','black'],'red'],
+['How many? ⭐⭐⭐',['two','three','five','ten'],'three'],
+['Which is an animal?',['book','fox','pink','desk'],'fox'],
+['Which is a school thing?',['pencil','banana','cat','sunny'],'pencil']]},
+{id:'reading',icon:'📖',title:'Reading Castle',desc:'Read, understand and answer',tasks:[
+['Read: “This is a cat. The cat is big.” Is the cat big?',['Yes','No'],'Yes'],
+['“The dog is red.” What color is the dog?',['Blue','Red'],'Red'],
+['“I see a pen.” What do I see?',['A pen','A cat'],'A pen'],
+['“The cat can jump.” Can the cat jump?',['Yes','No'],'Yes']]},
+{id:'grammar',icon:'✨',title:'Grammar Magic',desc:'am/is/are, can, have, plurals & prepositions',tasks:[
+['I ___ a girl.',['am','is','are','be'],'am'],
+['She ___ a dog.',['have','has','are','am'],'has'],
+['I ___ jump.',['can','is','has','am'],'can'],
+['The cat is ___ the box.',['in','are','am','to'],'in']]}
+];
+let state=JSON.parse(localStorage.getItem('keaState')||'{"xp":0,"stars":0,"done":[],"accuracy":0,"answers":0}');
+let current=null, q=0, score=0;
+function save(){localStorage.setItem('keaState',JSON.stringify(state));document.getElementById('xp').textContent=state.xp;document.getElementById('stars').textContent=state.stars}
+function home(){
+document.getElementById('app').innerHTML=`<section class="hero"><div><div>🌙✨ Welcome, little learner!</div><h1>English<br>Adventure</h1><p>Learn letters, sounds, words and your first English sentences through tiny magical missions.</p><button class="cta" onclick="map()">START ADVENTURE ✨</button></div><div class="rabbit">🐰🎀</div></section>`;
+}
+function map(){
+document.getElementById('app').innerHTML=`<h2>🗺️ Choose your mission</h2><p class="small">Complete missions to unlock new worlds. ⭐ ${state.stars} stars collected</p><div class="map">${lessons.map((l,i)=>{let locked=i>0&&!state.done.includes(lessons[i-1].id);return `<article class="card ${locked?'locked':''}"><div class="icon">${l.icon}</div><h3>${i+1}. ${l.title}</h3><p>${l.desc}</p><button class="primary" ${locked?'disabled':''} onclick="start('${l.id}')">${locked?'🔒 Locked':'PLAY ▶'}</button></article>`}).join('')}</div><div class="teacher"><b>🎀 Progress</b><p>${state.done.length}/${lessons.length} missions completed · ${state.answers?Math.round(state.accuracy/state.answers*100):0}% accuracy</p><button class="secondary" onclick="daily()">⏱️ Daily 10-min Mission</button> <button class="secondary" onclick="review()">🔄 Review</button></div>`;
+}
+function start(id){current=lessons.find(x=>x.id===id);q=0;score=0;renderQ()}
+function renderQ(){
+let t=current.tasks[q];document.getElementById('app').innerHTML=`<div class="lesson"><div class="small">${current.icon} ${current.title} · Question ${q+1}/${current.tasks.length}</div><div class="progress"><div class="bar" style="width:${q/current.tasks.length*100}%"></div></div><div class="question">${t[0]}</div><div class="choices">${t[1].map(x=>`<button class="choice" onclick="answer(this,'${x.replaceAll("'","&#39;")}','${t[2].replaceAll("'","&#39;")}')">${x}</button>`).join('')}</div><div id="feedback" class="feedback"></div><div class="nav"><button class="secondary" onclick="map()">← Map</button></div></div>`;
+}
+function answer(btn,choice,correct){
+document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+state.answers++;
+if(choice===correct){score++;state.xp+=10;state.accuracy++;document.getElementById('feedback').innerHTML='<span class="correct">✨ Amazing! Correct!</span> +10 XP';}
+else document.getElementById('feedback').innerHTML=`<span class="wrong">💜 Almost! The answer is <b>${correct}</b>.</span>`;
+save();setTimeout(()=>{q++;q<current.tasks.length?renderQ():finish()},900)
+}
+function finish(){
+let earned=score>=3?3:score>=2?2:1;state.stars+=earned;if(!state.done.includes(current.id))state.done.push(current.id);save();
+document.getElementById('app').innerHTML=`<div class="lesson" style="text-align:center"><div class="rabbit">🐰🎀</div><h1>Mission Complete!</h1><p class="stars" style="font-size:30px">${'⭐'.repeat(earned)}</p><h2>${score}/${current.tasks.length} correct</h2><p>You earned <b>+${earned} stars</b> and ${score*10} XP.</p><button class="primary" onclick="map()">CONTINUE ADVENTURE →</button></div>`
+}
+function daily(){let l=lessons.find(x=>!state.done.includes(x.id))||lessons[0];start(l.id)}
+function review(){let l=lessons[Math.floor(Math.random()*lessons.length)];start(l.id)}
+home();save();
+</script>
+</body>
+</html>
